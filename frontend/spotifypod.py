@@ -13,8 +13,9 @@ from view_model import *
 from PIL import ImageTk, Image
 from sys import platform
 import os
-   
-  
+
+from wifi import get_wifi_network_ssid, get_wifi_network_rssi
+
 LARGEFONT =("ChicagoFLF", 90) 
 MED_FONT =("ChicagoFLF", 70) 
 SCALE = 1
@@ -303,6 +304,9 @@ class StartPage(tk.Frame):
         self.pause_image = ImageTk.PhotoImage(flattenAlpha(Image.open('pod_pause.png')))
         self.space_image = ImageTk.PhotoImage(flattenAlpha(Image.open('pod_space.png')))
         self.wifi_image = ImageTk.PhotoImage(flattenAlpha(Image.open('pod_wifi.png')))
+        self.wifi_good_image = ImageTk.PhotoImage(flattenAlpha(Image.open('pod_wifi_good.png')))
+        self.wifi_fair_image = ImageTk.PhotoImage(flattenAlpha(Image.open('pod_wifi_fair.png')))
+        self.wifi_weak_image = ImageTk.PhotoImage(flattenAlpha(Image.open('pod_wifi_weak.png')))
         self.configure(bg=SPOT_BLACK)
         header_container = tk.Canvas(self, bg=SPOT_BLACK, highlightthickness=0, relief='ridge')
         header_container.grid(sticky='we')
@@ -325,6 +329,10 @@ class StartPage(tk.Frame):
         listFrame.grid(row=0, column=0, sticky="nsew")
         contentFrame.grid_rowconfigure(0, weight=1)
         contentFrame.grid_columnconfigure(0, weight=1)
+
+        self.wifi_label = tk.Label(header_container, text="WiFi Name", font=MED_FONT, background=SPOT_BLACK,
+                                     foreground=SPOT_GREEN)
+        self.wifi_label.grid(sticky='we', column=3, row=0, padx=(0, 10))
 
         # scrollbar 
         self.scrollFrame = tk.Canvas(contentFrame)
@@ -367,8 +375,19 @@ class StartPage(tk.Frame):
         self.play_indicator.configure(image = play_image)
         self.play_indicator.image = play_image
         wifi_image = self.wifi_image if has_wifi else self.space_image
+        if has_wifi:
+            wifi_rssi = get_wifi_network_rssi("en1")
+            if wifi_rssi > -50:
+                wifi_image = self.wifi_good_image
+            elif -50 > wifi_rssi > -70:
+                wifi_image = self.wifi_fair_image
+            else:
+                wifi_image = self.wifi_weak_image
+
         self.wifi_indicator.configure(image = wifi_image)
         self.wifi_indicator.image = wifi_image
+        import random
+        self.wifi_label.configure(text="Rand " + str(random.randint(0, 100)))
     
     def set_list_item(self, index, text, line_type = LINE_NORMAL, show_arrow = False):
         bgColor = SPOT_GREEN if line_type == LINE_HIGHLIGHT else SPOT_BLACK
@@ -538,7 +557,8 @@ def onDownPressed():
     page.nav_down()
     render(app, page.render())
    
-# Driver Code 
+# Driver Code
+print("Your Wifi Network is: " + get_wifi_network_ssid("en1"))
 page = RootPage(None)
 app = tkinterApp() 
 render(app, page.render())

@@ -1,5 +1,6 @@
 import objc
 
+DEFAULT_WIFI_INTERFACE = "en1"
 
 def get_wifi_network_ssid(interface_name):
     objc.loadBundle('CoreWLAN',

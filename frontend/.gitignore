@@ -1,2 +1,5 @@
 **/__pycache__/
 .cache
+run_client.sh
+.idea/
+*.pyc

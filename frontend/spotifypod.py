@@ -14,7 +14,7 @@ from PIL import ImageTk, Image
 from sys import platform
 import os
 
-from wifi import get_wifi_network_ssid, get_wifi_network_rssi
+from wifi import get_wifi_network_ssid, get_wifi_network_rssi, DEFAULT_WIFI_INTERFACE
 
 LARGEFONT =("ChicagoFLF", 90) 
 MED_FONT =("ChicagoFLF", 70) 
@@ -331,8 +331,8 @@ class StartPage(tk.Frame):
         contentFrame.grid_columnconfigure(0, weight=1)
 
         self.wifi_label = tk.Label(header_container, text="WiFi Name", font=MED_FONT, background=SPOT_BLACK,
-                                     foreground=SPOT_GREEN)
-        self.wifi_label.grid(sticky='we', column=3, row=0, padx=(0, 10))
+                                   foreground=SPOT_GREEN)
+        self.wifi_label.grid(sticky='w', column=3, row=0, padx=(0, 10))
 
         # scrollbar 
         self.scrollFrame = tk.Canvas(contentFrame)
@@ -372,11 +372,23 @@ class StartPage(tk.Frame):
         play_image = self.space_image
         if now_playing is not None:
             play_image = self.play_image if now_playing['is_playing'] else self.pause_image
-        self.play_indicator.configure(image = play_image)
+
+        self.play_indicator.configure(image=play_image)
         self.play_indicator.image = play_image
+
+        self.set_wifi_header(has_wifi)
+
+    def set_wifi_header(self, has_wifi=False):
+        if has_wifi:
+            wifi_ssid = get_wifi_network_ssid(DEFAULT_WIFI_INTERFACE)
+            self.wifi_label.configure(text=wifi_ssid)
+
+        self.set_wifi_indicator(has_wifi)
+
+    def set_wifi_indicator(self, has_wifi=False):
         wifi_image = self.wifi_image if has_wifi else self.space_image
         if has_wifi:
-            wifi_rssi = get_wifi_network_rssi("en1")
+            wifi_rssi = get_wifi_network_rssi(DEFAULT_WIFI_INTERFACE)
             if wifi_rssi > -50:
                 wifi_image = self.wifi_good_image
             elif -50 > wifi_rssi > -70:
@@ -384,10 +396,8 @@ class StartPage(tk.Frame):
             else:
                 wifi_image = self.wifi_weak_image
 
-        self.wifi_indicator.configure(image = wifi_image)
+        self.wifi_indicator.configure(image=wifi_image)
         self.wifi_indicator.image = wifi_image
-        import random
-        self.wifi_label.configure(text="Rand " + str(random.randint(0, 100)))
     
     def set_list_item(self, index, text, line_type = LINE_NORMAL, show_arrow = False):
         bgColor = SPOT_GREEN if line_type == LINE_HIGHLIGHT else SPOT_BLACK

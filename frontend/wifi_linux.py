@@ -28,5 +28,5 @@ def get_wifi_network_rssi(interface_name):
 
     m = re.search(RSSI_REGEX, output.strip())
 
-    return m.groups()[0]
+    return int(m.groups()[0])
 

@@ -13,8 +13,12 @@ from view_model import *
 from PIL import ImageTk, Image
 from sys import platform
 import os
+import platform
 
-from wifi import get_wifi_network_ssid, get_wifi_network_rssi, DEFAULT_WIFI_INTERFACE
+if platform.system() is "Darwin":
+    import wifi_osx as wifi
+elif platform.system() is "Linux":
+    import wifi_linux as wifi
 
 LARGEFONT =("ChicagoFLF", 90) 
 MED_FONT =("ChicagoFLF", 70) 
@@ -380,7 +384,7 @@ class StartPage(tk.Frame):
 
     def set_wifi_header(self, has_wifi=False):
         if has_wifi:
-            wifi_ssid = get_wifi_network_ssid(DEFAULT_WIFI_INTERFACE)
+            wifi_ssid = wifi.get_wifi_network_ssid(wifi.DEFAULT_WIFI_INTERFACE)
             self.wifi_label.configure(text=wifi_ssid)
 
         self.set_wifi_indicator(has_wifi)
@@ -388,7 +392,7 @@ class StartPage(tk.Frame):
     def set_wifi_indicator(self, has_wifi=False):
         wifi_image = self.wifi_image if has_wifi else self.space_image
         if has_wifi:
-            wifi_rssi = get_wifi_network_rssi(DEFAULT_WIFI_INTERFACE)
+            wifi_rssi = wifi.get_wifi_network_rssi(wifi.DEFAULT_WIFI_INTERFACE)
             if wifi_rssi > -50:
                 wifi_image = self.wifi_good_image
             elif -50 > wifi_rssi > -70:

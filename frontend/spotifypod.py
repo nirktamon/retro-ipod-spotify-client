@@ -335,10 +335,6 @@ class StartPage(tk.Frame):
         contentFrame.grid_rowconfigure(0, weight=1)
         contentFrame.grid_columnconfigure(0, weight=1)
 
-        self.wifi_label = tk.Label(header_container, text="WiFi Name", font=MED_FONT, background=SPOT_BLACK,
-                                   foreground=SPOT_GREEN)
-        self.wifi_label.grid(sticky='w', column=3, row=0, padx=(0, 10))
-
         # scrollbar 
         self.scrollFrame = tk.Canvas(contentFrame)
         self.scrollFrame.configure(bg=SPOT_BLACK, width=int(50 * SCALE), bd=0, highlightthickness=4, highlightbackground=SPOT_GREEN)
@@ -384,10 +380,6 @@ class StartPage(tk.Frame):
         self.set_wifi_header(has_wifi)
 
     def set_wifi_header(self, has_wifi=False):
-        if has_wifi:
-            wifi_ssid = wifi.get_wifi_network_ssid(wifi.DEFAULT_WIFI_INTERFACE)
-            self.wifi_label.configure(text=wifi_ssid)
-
         self.set_wifi_indicator(has_wifi)
 
     def set_wifi_indicator(self, has_wifi=False):

@@ -13,11 +13,10 @@ from view_model import *
 from PIL import ImageTk, Image
 from sys import platform
 import os
-import platform
 
-if platform.system().lower().startswith("dar"):
+if platform.lower().startswith("dar"):
     import wifi_osx as wifi
-elif platform.system().lower().startswith("lin"):
+elif platform.lower().startswith("lin"):
     import wifi_linux as wifi
 
 LARGEFONT =("ChicagoFLF", 90) 

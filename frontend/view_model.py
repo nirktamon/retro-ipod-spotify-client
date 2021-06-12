@@ -1,5 +1,12 @@
 import spotify_manager
-from functools import lru_cache 
+from sys import platform
+from functools import lru_cache
+
+if platform.lower().startswith("dar"):
+    import wifi_osx as wifi
+elif platform.lower().startswith("lin"):
+    import wifi_linux as wifi
+from network_utils import get_ip
 
 MENU_PAGE_SIZE = 6
 
@@ -14,6 +21,7 @@ LINE_HIGHLIGHT = 1
 LINE_TITLE = 2
 
 spotify_manager.refresh_devices()
+
 
 class LineItem():
     def __init__(self, title = "", line_type = LINE_NORMAL, show_arrow = False):
@@ -306,6 +314,44 @@ class AlbumsPage(PlaylistsPage):
     def get_content(self):
         return spotify_manager.DATASTORE.getAllSavedAlbums()
 
+
+class SettingsPage(MenuPage):
+    def __init__(self, previous_page):
+        super().__init__(self.get_title(), previous_page, has_sub_page=False)
+
+    def get_title(self):
+        return "Settings"
+
+    def get_content(self):
+        contents = []
+
+        wifi_name_label = wifi.get_wifi_network_ssid(wifi.DEFAULT_WIFI_INTERFACE)
+        contents.append(wifi_name_label)
+
+        wifi_signal_strength = wifi.get_wifi_network_rssi(wifi.DEFAULT_WIFI_INTERFACE)
+        wifi_signal_strength_label = "Signal: {0} dBm".format(wifi_signal_strength)
+        contents.append(wifi_signal_strength_label)
+
+        ip_label = get_ip()
+        contents.append(ip_label)
+
+        bluetooth_device_label = "BT Device: "
+        contents.append(bluetooth_device_label)
+
+        return contents
+
+    def total_size(self):
+        return len(self.get_content())
+
+    def page_at(self, index):
+        return SingleSettingsPage(self.get_content()[index], self)
+
+
+class SingleSettingsPage(MenuPage):
+    def __init__(self, header, previous_page):
+        super().__init__(header, previous_page, has_sub_page=False, is_title=False)
+
+
 class SearchResultsPage(MenuPage):
     def __init__(self, previous_page, results):
         super().__init__("Search Results", previous_page, has_sub_page=True)
@@ -442,6 +488,7 @@ class RootPage(MenuPage):
             NewReleasesPage(self),
             PlaylistsPage(self),
             SearchPage(self),
+            SettingsPage(self),
             NowPlayingPage(self, "Now Playing", NowPlayingCommand())
         ]
         self.index = 0

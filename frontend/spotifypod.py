@@ -15,9 +15,9 @@ from sys import platform
 import os
 import platform
 
-if platform.system().lower() is "darwin":
+if platform.system().lower().startswith("dar"):
     import wifi_osx as wifi
-elif platform.system().lower() is "linux":
+elif platform.system().lower().startswith("lin"):
     import wifi_linux as wifi
 
 LARGEFONT =("ChicagoFLF", 90) 

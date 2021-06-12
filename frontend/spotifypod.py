@@ -572,7 +572,6 @@ def onDownPressed():
     render(app, page.render())
    
 # Driver Code
-print("Your Wifi Network is: " + get_wifi_network_ssid("en1"))
 page = RootPage(None)
 app = tkinterApp() 
 render(app, page.render())

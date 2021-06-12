@@ -6,6 +6,8 @@ if platform.lower().startswith("dar"):
     import wifi_osx as wifi
 elif platform.lower().startswith("lin"):
     import wifi_linux as wifi
+else:
+    import wifi_windows as wifi
 from network_utils import get_ip
 
 MENU_PAGE_SIZE = 6
